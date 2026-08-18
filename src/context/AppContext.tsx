@@ -33,11 +33,15 @@ interface AppContextType {
   // Data Mutators
   addHisabEntry: (entry: Omit<HisabEntry, 'id' | 'createdAt'>) => HisabEntry;
   updateHisabEntry: (id: string, updatedFields: Partial<HisabEntry>, editedBy: string) => void;
+  deleteHisabEntry: (id: string) => void;
+  deleteMultipleHisabEntries: (ids: string[]) => void;
   getTodayEntryForSalesman: (salesmanId: string) => HisabEntry | undefined;
   addSalesman: (salesman: Omit<Salesman, 'id'>) => void;
   updateSalesman: (id: string, salesman: Partial<Salesman>) => void;
+  deleteSalesman: (id: string) => void;
   addRoute: (route: Omit<Route, 'id'>) => void;
   updateRoute: (id: string, route: Partial<Route>) => void;
+  deleteRoute: (id: string) => void;
   updateSettings: (newSettings: Partial<AppSettings>) => void;
   addPendingPayment: (data: Omit<PendingPayment, 'id' | 'createdAt' | 'status'>) => void;
   settlePendingPayment: (id: string) => void;
@@ -242,6 +246,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast('હિસાબ સુધારવામાં આવ્યો!');
   };
 
+  const deleteHisabEntry = (id: string) => {
+    setEntries((prev) => prev.filter((e) => e.id !== id));
+    apiClient.deleteEntry(id);
+    showToast('હિસાબ એન્ટ્રી ડિલીટ થઈ!');
+  };
+
+  const deleteMultipleHisabEntries = (ids: string[]) => {
+    const idSet = new Set(ids);
+    setEntries((prev) => prev.filter((e) => !idSet.has(e.id)));
+    apiClient.deleteEntriesBatch(ids);
+    showToast(`${ids.length} પસંદ કરેલ એન્ટ્રીઝ ડિલીટ થઈ!`);
+  };
+
   const addSalesman = (salesmanData: Omit<Salesman, 'id'>) => {
     const newSalesman: Salesman = {
       ...salesmanData,
@@ -258,6 +275,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast('સેલ્સમેન માહિતી અપડેટ થઈ!');
   };
 
+  const deleteSalesman = (id: string) => {
+    setSalesmen((prev) => prev.filter((s) => s.id !== id));
+    apiClient.deleteSalesman(id);
+    showToast('સેલ્સમેન એકાઉન્ટ ડિલીટ થયું!');
+  };
+
   const addRoute = (routeData: Omit<Route, 'id'>) => {
     const newRoute: Route = {
       ...routeData,
@@ -272,6 +295,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setRoutes((prev) => prev.map((r) => (r.id === id ? { ...r, ...updated } : r)));
     apiClient.updateRoute(id, updated);
     showToast('રૂટ માહિતી અપડેટ થઈ!');
+  };
+
+  const deleteRoute = (id: string) => {
+    setRoutes((prev) => prev.filter((r) => r.id !== id));
+    apiClient.deleteRoute(id);
+    showToast('રૂટ ડિલીટ થયો!');
   };
 
   const updateSettings = (newSettings: Partial<AppSettings>) => {
@@ -437,11 +466,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         pendingPayments,
         addHisabEntry,
         updateHisabEntry,
+        deleteHisabEntry,
+        deleteMultipleHisabEntries,
         getTodayEntryForSalesman,
         addSalesman,
         updateSalesman,
+        deleteSalesman,
         addRoute,
         updateRoute,
+        deleteRoute,
         updateSettings,
         addPendingPayment,
         settlePendingPayment,

@@ -91,6 +91,15 @@ export const apiClient = {
     }
   },
 
+  deleteSalesman: async (id: string): Promise<boolean> => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/salesmen/${id}`, { method: 'DELETE' });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  },
+
   // Routes
   getRoutes: async (): Promise<Route[] | null> => {
     try {
@@ -130,6 +139,15 @@ export const apiClient = {
     }
   },
 
+  deleteRoute: async (id: string): Promise<boolean> => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/routes/${id}`, { method: 'DELETE' });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  },
+
   // Entries
   getEntries: async (): Promise<HisabEntry[] | null> => {
     try {
@@ -166,6 +184,28 @@ export const apiClient = {
       return await res.json();
     } catch {
       return null;
+    }
+  },
+
+  deleteEntry: async (id: string): Promise<boolean> => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/entries/${id}`, { method: 'DELETE' });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  },
+
+  deleteEntriesBatch: async (ids: string[]): Promise<boolean> => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/entries/delete-batch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids }),
+      });
+      return res.ok;
+    } catch {
+      return false;
     }
   },
 

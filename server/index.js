@@ -293,6 +293,16 @@ app.put('/api/salesmen/:id', async (req, res) => {
   }
 });
 
+app.delete('/api/salesmen/:id', async (req, res) => {
+  if (!isDbConnected) return res.status(503).json({ error: 'DB Disconnected' });
+  try {
+    await Salesman.findOneAndDelete({ id: req.params.id });
+    res.json({ success: true });
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
 // Routes APIs
 app.get('/api/routes', async (req, res) => {
   if (!isDbConnected) return res.status(503).json({ error: 'DB Disconnected' });
@@ -324,6 +334,16 @@ app.put('/api/routes/:id', async (req, res) => {
   }
 });
 
+app.delete('/api/routes/:id', async (req, res) => {
+  if (!isDbConnected) return res.status(503).json({ error: 'DB Disconnected' });
+  try {
+    await Route.findOneAndDelete({ id: req.params.id });
+    res.json({ success: true });
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
 // Entries APIs
 app.get('/api/entries', async (req, res) => {
   if (!isDbConnected) return res.status(503).json({ error: 'DB Disconnected' });
@@ -350,6 +370,30 @@ app.put('/api/entries/:id', async (req, res) => {
   try {
     const updated = await HisabEntry.findOneAndUpdate({ id: req.params.id }, req.body, { new: true });
     res.json(updated);
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+app.delete('/api/entries/:id', async (req, res) => {
+  if (!isDbConnected) return res.status(503).json({ error: 'DB Disconnected' });
+  try {
+    await HisabEntry.findOneAndDelete({ id: req.params.id });
+    res.json({ success: true });
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+app.post('/api/entries/delete-batch', async (req, res) => {
+  if (!isDbConnected) return res.status(503).json({ error: 'DB Disconnected' });
+  try {
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ error: 'No entry IDs provided' });
+    }
+    await HisabEntry.deleteMany({ id: { $in: ids } });
+    res.json({ success: true, count: ids.length });
   } catch (e) {
     res.status(400).json({ error: e.message });
   }

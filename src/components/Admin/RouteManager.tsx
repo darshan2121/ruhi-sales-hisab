@@ -3,18 +3,19 @@ import { useApp } from '../../context/AppContext';
 import { translations } from '../../utils/translations';
 import { formatCurrency } from '../../utils/formatters';
 import type { Route } from '../../types';
-import { ArrowLeft, Plus, MapPin, Edit2, Check, X } from 'lucide-react';
+import { ArrowLeft, Plus, MapPin, Edit2, Trash2, Check, X, AlertTriangle } from 'lucide-react';
 
 interface RouteManagerProps {
   onBack: () => void;
 }
 
 export const RouteManager: React.FC<RouteManagerProps> = ({ onBack }) => {
-  const { routes, addRoute, updateRoute, language } = useApp();
+  const { routes, addRoute, updateRoute, deleteRoute, language } = useApp();
   const t = translations[language];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRoute, setEditingRoute] = useState<Route | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   const [name, setName] = useState('');
   const [expectedCollection, setExpectedCollection] = useState(15000);
@@ -31,6 +32,11 @@ export const RouteManager: React.FC<RouteManagerProps> = ({ onBack }) => {
     setName(r.name);
     setExpectedCollection(r.expectedCollection);
     setIsModalOpen(true);
+  };
+
+  const handleDelete = (id: string) => {
+    deleteRoute(id);
+    setDeleteConfirmId(null);
   };
 
   const handleSave = (e: React.FormEvent) => {
@@ -66,7 +72,7 @@ export const RouteManager: React.FC<RouteManagerProps> = ({ onBack }) => {
 
         <button
           onClick={handleOpenAdd}
-          className="bg-[#4B5FC4] hover:bg-blue-700 active:scale-95 text-white font-black text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition-all"
+          className="bg-[#4B5FC4] hover:bg-blue-700 active:scale-95 text-white font-black text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
         >
           <Plus size={16} />
           <span>{t.addRoute}</span>
@@ -97,15 +103,55 @@ export const RouteManager: React.FC<RouteManagerProps> = ({ onBack }) => {
               </div>
             </div>
 
-            <button
-              onClick={() => handleOpenEdit(route)}
-              className="p-2 text-slate-400 hover:text-[#4B5FC4] hover:bg-blue-50 rounded-xl transition-all"
-            >
-              <Edit2 size={16} />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => handleOpenEdit(route)}
+                title="સંપાદિત કરો (Edit)"
+                className="p-2 text-slate-400 hover:text-[#4B5FC4] hover:bg-blue-50 rounded-xl transition-all cursor-pointer"
+              >
+                <Edit2 size={16} />
+              </button>
+
+              <button
+                onClick={() => setDeleteConfirmId(route.id)}
+                title="ડિલીટ કરો (Delete)"
+                className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all cursor-pointer"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
           </div>
         ))}
       </div>
+
+      {/* Confirm Delete Modal */}
+      {deleteConfirmId && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-sm rounded-3xl p-5 shadow-2xl text-center space-y-4 animate-in zoom-in-95 border-2 border-rose-400">
+            <div className="w-12 h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto font-black">
+              <AlertTriangle size={24} />
+            </div>
+            <div>
+              <h3 className="text-lg font-black text-slate-900">શું તમે આ રૂટ ડિલીટ કરવા માંગો છો?</h3>
+              <p className="text-xs text-slate-500 font-semibold mt-1">આ ક્રિયા રદ કરી શકાશે નહીં.</p>
+            </div>
+            <div className="flex gap-2 pt-2">
+              <button
+                onClick={() => setDeleteConfirmId(null)}
+                className="w-full bg-slate-100 text-slate-700 py-2.5 rounded-xl font-extrabold text-xs cursor-pointer"
+              >
+                રદ કરો
+              </button>
+              <button
+                onClick={() => handleDelete(deleteConfirmId)}
+                className="w-full bg-rose-600 hover:bg-rose-700 text-white py-2.5 rounded-xl font-black text-xs shadow-md cursor-pointer"
+              >
+                હા, ડિલીટ કરો
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add/Edit Modal */}
       {isModalOpen && (

@@ -2,18 +2,19 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { translations } from '../../utils/translations';
 import type { Salesman } from '../../types';
-import { ArrowLeft, UserPlus, Edit2, Phone, MapPin, Percent, Check, X } from 'lucide-react';
+import { ArrowLeft, UserPlus, Edit2, Trash2, Phone, MapPin, Percent, Check, X, AlertTriangle } from 'lucide-react';
 
 interface SalesmanManagerProps {
   onBack: () => void;
 }
 
 export const SalesmanManager: React.FC<SalesmanManagerProps> = ({ onBack }) => {
-  const { salesmen, routes, addSalesman, updateSalesman, language, settings } = useApp();
+  const { salesmen, routes, addSalesman, updateSalesman, deleteSalesman, language, settings } = useApp();
   const t = translations[language];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSalesman, setEditingSalesman] = useState<Salesman | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // Form fields
   const [name, setName] = useState('');
@@ -40,6 +41,11 @@ export const SalesmanManager: React.FC<SalesmanManagerProps> = ({ onBack }) => {
     setRouteId(s.routeId);
     setCustomProfitPct(s.customProfitPct);
     setIsModalOpen(true);
+  };
+
+  const handleDelete = (id: string) => {
+    deleteSalesman(id);
+    setDeleteConfirmId(null);
   };
 
   const handleSave = (e: React.FormEvent) => {
@@ -75,7 +81,7 @@ export const SalesmanManager: React.FC<SalesmanManagerProps> = ({ onBack }) => {
       <div className="flex items-center justify-between">
         <button
           onClick={onBack}
-          className="flex items-center gap-1 text-slate-600 font-extrabold text-sm hover:text-slate-900 transition-colors"
+          className="flex items-center gap-1 text-slate-600 font-extrabold text-sm hover:text-slate-900 transition-colors cursor-pointer"
         >
           <ArrowLeft size={18} />
           <span>{t.backBtn}</span>
@@ -83,7 +89,7 @@ export const SalesmanManager: React.FC<SalesmanManagerProps> = ({ onBack }) => {
 
         <button
           onClick={handleOpenAdd}
-          className="bg-[#4B5FC4] hover:bg-blue-700 active:scale-95 text-white font-black text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition-all"
+          className="bg-[#4B5FC4] hover:bg-blue-700 active:scale-95 text-white font-black text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
         >
           <UserPlus size={16} />
           <span>{t.addSalesman}</span>
@@ -120,14 +126,14 @@ export const SalesmanManager: React.FC<SalesmanManagerProps> = ({ onBack }) => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <button
                     onClick={() =>
                       updateSalesman(salesman.id, {
                         status: salesman.status === 'active' ? 'inactive' : 'active',
                       })
                     }
-                    className={`text-xs font-black px-2.5 py-1 rounded-lg transition-all ${
+                    className={`text-xs font-black px-2 py-1 rounded-lg transition-all cursor-pointer ${
                       salesman.status === 'active'
                         ? 'bg-emerald-100 text-emerald-800'
                         : 'bg-slate-200 text-slate-600'
@@ -138,9 +144,18 @@ export const SalesmanManager: React.FC<SalesmanManagerProps> = ({ onBack }) => {
 
                   <button
                     onClick={() => handleOpenEdit(salesman)}
-                    className="p-1.5 text-slate-400 hover:text-[#4B5FC4] hover:bg-blue-50 rounded-lg transition-all"
+                    title="સંપાદિત કરો"
+                    className="p-1.5 text-slate-400 hover:text-[#4B5FC4] hover:bg-blue-50 rounded-lg transition-all cursor-pointer"
                   >
                     <Edit2 size={16} />
+                  </button>
+
+                  <button
+                    onClick={() => setDeleteConfirmId(salesman.id)}
+                    title="ડિલીટ કરો"
+                    className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all cursor-pointer"
+                  >
+                    <Trash2 size={16} />
                   </button>
                 </div>
               </div>
@@ -165,6 +180,35 @@ export const SalesmanManager: React.FC<SalesmanManagerProps> = ({ onBack }) => {
           );
         })}
       </div>
+
+      {/* Confirm Delete Modal */}
+      {deleteConfirmId && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-sm rounded-3xl p-5 shadow-2xl text-center space-y-4 animate-in zoom-in-95 border-2 border-rose-400">
+            <div className="w-12 h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto font-black">
+              <AlertTriangle size={24} />
+            </div>
+            <div>
+              <h3 className="text-lg font-black text-slate-900">શું તમે આ સેલ્સમેન ડિલીટ કરવા માંગો છો?</h3>
+              <p className="text-xs text-slate-500 font-semibold mt-1">આ સેલ્સમેન એકાઉન્ટ સિસ્ટમમાંથી દૂર થશે.</p>
+            </div>
+            <div className="flex gap-2 pt-2">
+              <button
+                onClick={() => setDeleteConfirmId(null)}
+                className="w-full bg-slate-100 text-slate-700 py-2.5 rounded-xl font-extrabold text-xs cursor-pointer"
+              >
+                રદ કરો
+              </button>
+              <button
+                onClick={() => handleDelete(deleteConfirmId)}
+                className="w-full bg-rose-600 hover:bg-rose-700 text-white py-2.5 rounded-xl font-black text-xs shadow-md cursor-pointer"
+              >
+                હા, ડિલીટ કરો
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add / Edit Modal */}
       {isModalOpen && (
