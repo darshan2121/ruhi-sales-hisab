@@ -375,11 +375,14 @@ app.put('/api/settings', async (req, res) => {
 const distPath = path.join(__dirname, '../dist');
 app.use(express.static(distPath));
 
-app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/api')) return next();
-  res.sendFile(path.join(distPath, 'index.html'), (err) => {
-    if (err) res.status(404).send('Build dist directory not found. Please run npm run build.');
-  });
+// Fallback for Single Page Application Client-Side Routing (Express 5 Compatible)
+app.use((req, res, next) => {
+  if (req.method === 'GET' && !req.path.startsWith('/api')) {
+    return res.sendFile(path.join(distPath, 'index.html'), (err) => {
+      if (err) res.status(404).send('Build dist directory not found. Please run npm run build.');
+    });
+  }
+  next();
 });
 
 // Start Express Server
