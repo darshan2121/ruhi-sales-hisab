@@ -106,17 +106,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setIsMongoConnected(true);
 
         const remoteSalesmen = await apiClient.getSalesmen();
-        if (remoteSalesmen && remoteSalesmen.length > 0) {
+        if (remoteSalesmen) {
           setSalesmen(remoteSalesmen);
         }
 
         const remoteRoutes = await apiClient.getRoutes();
-        if (remoteRoutes && remoteRoutes.length > 0) {
+        if (remoteRoutes) {
           setRoutes(remoteRoutes);
         }
 
         const remoteEntries = await apiClient.getEntries();
-        if (remoteEntries && remoteEntries.length > 0) {
+        if (remoteEntries) {
           setEntries(remoteEntries);
         }
 
@@ -126,7 +126,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }
 
         const remotePending = await apiClient.getPendingPayments();
-        if (remotePending && remotePending.length > 0) {
+        if (remotePending) {
           setPendingPayments(remotePending);
         }
       } else {
