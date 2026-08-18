@@ -8,12 +8,14 @@ interface SalesmanHomeProps {
   onStartHisab: () => void;
   onViewHistory: () => void;
   onEditTodayHisab: () => void;
+  onViewPending?: () => void;
 }
 
 export const SalesmanHome: React.FC<SalesmanHomeProps> = ({
   onStartHisab,
   onViewHistory,
   onEditTodayHisab,
+  onViewPending,
 }) => {
   const { activeSalesman, language, getTodayEntryForSalesman } = useApp();
   const t = translations[language];
@@ -123,15 +125,25 @@ export const SalesmanHome: React.FC<SalesmanHomeProps> = ({
         <span>{t.startHisabBtn}</span>
       </button>
 
-      {/* SECONDARY ACTION: PAST RECORDS */}
-      <div>
+      {/* SECONDARY ACTIONS: PAST RECORDS & PENDING REMINDERS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <button
           onClick={onViewHistory}
-          className="w-full bg-white hover:bg-slate-50 active:scale-95 text-slate-800 py-3.5 px-4 rounded-2xl font-black text-sm border-2 border-slate-200 shadow-sm flex items-center justify-center gap-2 transition-all"
+          className="w-full bg-white hover:bg-slate-50 active:scale-95 text-slate-800 py-3.5 px-4 rounded-2xl font-black text-sm border-2 border-slate-200 shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer"
         >
           <Calendar className="w-5 h-5 text-[#4B5FC4]" />
           <span>{t.pastRecordsBtn}</span>
         </button>
+
+        {onViewPending && (
+          <button
+            onClick={onViewPending}
+            className="w-full bg-amber-50 hover:bg-amber-100 active:scale-95 text-amber-900 py-3.5 px-4 rounded-2xl font-black text-sm border-2 border-amber-300 shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer"
+          >
+            <span className="text-base">⚠️</span>
+            <span>બાકી લેણી રકમ અને રિમાઇન્ડર</span>
+          </button>
+        )}
       </div>
     </div>
   );

@@ -15,6 +15,7 @@ import { RouteManager } from './components/Admin/RouteManager';
 import { AdminReports } from './components/Admin/AdminReports';
 import { SettingsView } from './components/Admin/SettingsView';
 import { EditHisabModal } from './components/EditHisabModal';
+import { CustomerPendingManager } from './components/CustomerPendingManager';
 
 import type { Route, CashBreakdown, HisabEntry } from './types';
 import { calculateCashTotal, getTodayDateString } from './utils/formatters';
@@ -50,11 +51,11 @@ const MainContent: React.FC = () => {
 
   // Salesman Navigation view state
   const [salesmanView, setSalesmanView] = useState<
-    'home' | 'step1' | 'step2' | 'step3' | 'step4' | 'history'
+    'home' | 'step1' | 'step2' | 'step3' | 'step4' | 'history' | 'pending'
   >('home');
 
   // Admin Navigation tab state
-  const [adminTab, setAdminTab] = useState<'dashboard' | 'salesmen' | 'routes' | 'reports' | 'settings'>(
+  const [adminTab, setAdminTab] = useState<'dashboard' | 'salesmen' | 'routes' | 'reports' | 'settings' | 'pending'>(
     'dashboard'
   );
 
@@ -134,6 +135,7 @@ const MainContent: React.FC = () => {
                 <SalesmanHome
                   onStartHisab={handleStartHisab}
                   onViewHistory={() => setSalesmanView('history')}
+                  onViewPending={() => setSalesmanView('pending')}
                   onEditTodayHisab={() => {
                     const todayEntry = getTodayEntryForSalesman(activeSalesman.id);
                     if (todayEntry) setEditingEntry(todayEntry);
@@ -187,6 +189,10 @@ const MainContent: React.FC = () => {
                   onEditEntry={(entry) => setEditingEntry(entry)}
                 />
               )}
+
+              {salesmanView === 'pending' && (
+                <CustomerPendingManager onBack={() => setSalesmanView('home')} />
+              )}
             </>
           )}
 
@@ -217,6 +223,10 @@ const MainContent: React.FC = () => {
 
               {adminTab === 'settings' && (
                 <SettingsView onBack={() => setAdminTab('dashboard')} />
+              )}
+
+              {adminTab === 'pending' && (
+                <CustomerPendingManager onBack={() => setAdminTab('dashboard')} />
               )}
             </>
           )}

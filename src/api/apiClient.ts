@@ -193,4 +193,43 @@ export const apiClient = {
       return null;
     }
   },
+
+  // Pending Payments (Customer Outstanding Cash)
+  getPendingPayments: async (): Promise<any[] | null> => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/pending-payments`);
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  },
+
+  createPendingPayment: async (item: any): Promise<any | null> => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/pending-payments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(item),
+      });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  },
+
+  updatePendingPayment: async (id: string, updated: any): Promise<any | null> => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/pending-payments/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated),
+      });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  },
 };

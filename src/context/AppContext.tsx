@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { Salesman, Route, HisabEntry, AppSettings, Language, UserRole } from '../types';
+import type { Salesman, Route, HisabEntry, AppSettings, Language, UserRole, PendingPayment } from '../types';
 import { initialAppSettings, initialRoutes, initialSalesmen, initialEntries } from '../data/mockData';
 import { getTodayDateString } from '../utils/formatters';
 import { apiClient } from '../api/apiClient';
@@ -28,6 +28,7 @@ interface AppContextType {
   routes: Route[];
   entries: HisabEntry[];
   settings: AppSettings;
+  pendingPayments: PendingPayment[];
   
   // Data Mutators
   addHisabEntry: (entry: Omit<HisabEntry, 'id' | 'createdAt'>) => HisabEntry;
@@ -38,6 +39,8 @@ interface AppContextType {
   addRoute: (route: Omit<Route, 'id'>) => void;
   updateRoute: (id: string, route: Partial<Route>) => void;
   updateSettings: (newSettings: Partial<AppSettings>) => void;
+  addPendingPayment: (data: Omit<PendingPayment, 'id' | 'createdAt' | 'status'>) => void;
+  settlePendingPayment: (id: string) => void;
   
   // Notification Toast
   toastMessage: string | null;
@@ -81,6 +84,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return saved ? JSON.parse(saved) : initialAppSettings;
   });
 
+  const [pendingPayments, setPendingPayments] = useState<PendingPayment[]>(() => {
+    const saved = localStorage.getItem('ruhi_pending_payments');
+    return saved ? JSON.parse(saved) : [
+      {
+        id: 'pp-1',
+        customerName: 'Jay Ambe Store (જય અંબે સેલ્સ)',
+        mobile: '9876543210',
+        amount: 2500,
+        routeName: 'Ahmedabad East (અમદાવાદ ઈસ્ટ)',
+        salesmanId: 's1',
+        salesmanName: 'Ramesh Patel',
+        dueDate: getTodayDateString(),
+        status: 'pending',
+        notes: 'ગઈકાલના માલનું બાકી કલેક્શન',
+        createdAt: new Date().toISOString(),
+      },
+    ];
+  });
+
   const [language, setLanguageState] = useState<Language>(() => settings.language || 'gu');
   const [isOnline, setIsOnline] = useState<boolean>(true);
   const [isMongoConnected, setIsMongoConnected] = useState<boolean>(false);
@@ -111,6 +133,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const remoteSettings = await apiClient.getSettings();
         if (remoteSettings) {
           setSettings(remoteSettings);
+        }
+
+        const remotePending = await apiClient.getPendingPayments();
+        if (remotePending && remotePending.length > 0) {
+          setPendingPayments(remotePending);
         }
       } else {
         setIsMongoConnected(false);
@@ -149,6 +176,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     localStorage.setItem('ruhi_settings', JSON.stringify(settings));
   }, [settings]);
+
+  useEffect(() => {
+    localStorage.setItem('ruhi_pending_payments', JSON.stringify(pendingPayments));
+  }, [pendingPayments]);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
@@ -264,6 +295,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return merged;
     });
     showToast('સેટિંગ્સ સેવ થઈ!');
+  };
+
+  const addPendingPayment = (data: Omit<PendingPayment, 'id' | 'createdAt' | 'status'>) => {
+    const newItem: PendingPayment = {
+      ...data,
+      id: `pp-${Date.now()}`,
+      status: 'pending',
+      createdAt: new Date().toISOString(),
+    };
+    setPendingPayments((prev) => [newItem, ...prev]);
+    apiClient.createPendingPayment(newItem);
+    showToast(`ગ્રાહક ${newItem.customerName} ની ₹${newItem.amount.toLocaleString('en-IN')} બાકી રકમ નોંધાઈ!`);
+  };
+
+  const settlePendingPayment = (id: string) => {
+    const collectedAt = new Date().toISOString();
+    setPendingPayments((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, status: 'collected', collectedAt } : item))
+    );
+    apiClient.updatePendingPayment(id, { status: 'collected', collectedAt });
+    showToast('બાકી રકમ જમા થઈ ગઈ! (Marked as Received)');
   };
 
   const loginSalesman = async (salesmanIdOrMobile: string, pin: string): Promise<{ success: boolean; error?: string }> => {
@@ -396,6 +448,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         routes,
         entries,
         settings,
+        pendingPayments,
         addHisabEntry,
         updateHisabEntry,
         getTodayEntryForSalesman,
@@ -404,6 +457,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addRoute,
         updateRoute,
         updateSettings,
+        addPendingPayment,
+        settlePendingPayment,
         toastMessage,
         showToast,
       }}

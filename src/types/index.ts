@@ -75,3 +75,18 @@ export interface AppSettings {
   language: Language;
   adminPin: string;
 }
+
+export interface PendingPayment {
+  id: string;
+  customerName: string;
+  mobile: string;
+  amount: number;
+  routeName: string;
+  salesmanId: string;
+  salesmanName: string;
+  dueDate: string; // YYYY-MM-DD
+  status: 'pending' | 'collected';
+  notes?: string;
+  createdAt: string;
+  collectedAt?: string;
+}

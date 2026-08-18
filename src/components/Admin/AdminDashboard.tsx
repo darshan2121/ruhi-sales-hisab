@@ -5,15 +5,19 @@ import { formatCurrency, getTodayDateString } from '../../utils/formatters';
 import { Send, CheckCircle2, AlertTriangle, PieChart, Users, MapPin, FileSpreadsheet, Settings as SettingsIcon } from 'lucide-react';
 
 interface AdminDashboardProps {
-  onNavigateTab: (tab: 'salesmen' | 'routes' | 'reports' | 'settings') => void;
+  onNavigateTab: (tab: 'salesmen' | 'routes' | 'reports' | 'settings' | 'pending') => void;
   onEditEntry?: (entry: any) => void;
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onNavigateTab,
 }) => {
-  const { entries, salesmen, routes, language, showToast, settings } = useApp();
+  const { entries, salesmen, routes, pendingPayments, language, showToast, settings } = useApp();
   const t = translations[language];
+
+  const totalMarketPending = pendingPayments
+    .filter((p) => p.status === 'pending')
+    .reduce((sum, p) => sum + p.amount, 0);
 
   const todayStr = getTodayDateString();
 
@@ -92,6 +96,21 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
           </div>
         </div>
+      </div>
+
+      {/* MARKET OUTSTANDING PENDING CASH BANNER */}
+      <div className="bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 p-4 rounded-2xl shadow-md flex items-center justify-between">
+        <div>
+          <span className="text-[11px] font-black uppercase tracking-wider text-slate-950/80">⚠️ કુલ બાકી લેણી રકમ (Market Outstanding)</span>
+          <div className="text-2xl font-black mt-0.5">₹{totalMarketPending.toLocaleString('en-IN')}</div>
+        </div>
+        <button
+          onClick={() => onNavigateTab('pending')}
+          className="bg-slate-950 hover:bg-black text-amber-400 font-extrabold px-3 py-2 rounded-xl text-xs flex items-center gap-1 shadow-md transition-all cursor-pointer"
+        >
+          <span>જૂઓ અને રિમાઇન્ડર</span>
+          <span>→</span>
+        </button>
       </div>
 
       {/* QUICK ADMIN NAVIGATION SHORTCUTS */}

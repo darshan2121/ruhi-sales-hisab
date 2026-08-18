@@ -12,6 +12,7 @@ import { Salesman } from './models/Salesman.js';
 import { Route } from './models/Route.js';
 import { HisabEntry } from './models/HisabEntry.js';
 import { Settings } from './models/Settings.js';
+import { PendingPayment } from './models/PendingPayment.js';
 
 dotenv.config();
 
@@ -366,6 +367,37 @@ app.put('/api/settings', async (req, res) => {
       settings = await Settings.create(req.body);
     }
     res.json(settings);
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+// Pending Payments APIs (Customer Outstanding & WhatsApp Reminders)
+app.get('/api/pending-payments', async (req, res) => {
+  if (!isDbConnected) return res.status(503).json({ error: 'DB Disconnected' });
+  try {
+    const data = await PendingPayment.find({}).sort({ createdAt: -1 });
+    res.json(data);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.post('/api/pending-payments', async (req, res) => {
+  if (!isDbConnected) return res.status(503).json({ error: 'DB Disconnected' });
+  try {
+    const item = await PendingPayment.create(req.body);
+    res.status(201).json(item);
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+app.put('/api/pending-payments/:id', async (req, res) => {
+  if (!isDbConnected) return res.status(503).json({ error: 'DB Disconnected' });
+  try {
+    const updated = await PendingPayment.findOneAndUpdate({ id: req.params.id }, req.body, { new: true });
+    res.json(updated);
   } catch (e) {
     res.status(400).json({ error: e.message });
   }
