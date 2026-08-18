@@ -16,6 +16,7 @@ interface AppContextType {
   isOnline: boolean;
   setIsOnline: (online: boolean) => void;
   isMongoConnected: boolean;
+  refreshMongoDB: () => Promise<void>;
   
   // Auth Operations
   loginSalesman: (salesmanIdOrMobile: string, pin: string) => Promise<{ success: boolean; error?: string }>;
@@ -99,42 +100,47 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Check MongoDB Server Connection & Fetch Initial Remote Data
-  useEffect(() => {
-    const loadFromMongoDB = async () => {
-      const health = await apiClient.checkHealth();
-      if (health.dbConnected) {
-        setIsMongoConnected(true);
+  const refreshMongoDB = async () => {
+    const health = await apiClient.checkHealth();
+    if (health.dbConnected) {
+      setIsMongoConnected(true);
 
-        const remoteSalesmen = await apiClient.getSalesmen();
-        if (remoteSalesmen) {
-          setSalesmen(remoteSalesmen);
-        }
-
-        const remoteRoutes = await apiClient.getRoutes();
-        if (remoteRoutes) {
-          setRoutes(remoteRoutes);
-        }
-
-        const remoteEntries = await apiClient.getEntries();
-        if (remoteEntries) {
-          setEntries(remoteEntries);
-        }
-
-        const remoteSettings = await apiClient.getSettings();
-        if (remoteSettings) {
-          setSettings(remoteSettings);
-        }
-
-        const remotePending = await apiClient.getPendingPayments();
-        if (remotePending) {
-          setPendingPayments(remotePending);
-        }
-      } else {
-        setIsMongoConnected(false);
+      const remoteSalesmen = await apiClient.getSalesmen();
+      if (remoteSalesmen) {
+        setSalesmen(remoteSalesmen);
       }
-    };
 
-    loadFromMongoDB();
+      const remoteRoutes = await apiClient.getRoutes();
+      if (remoteRoutes) {
+        setRoutes(remoteRoutes);
+      }
+
+      const remoteEntries = await apiClient.getEntries();
+      if (remoteEntries) {
+        setEntries(remoteEntries);
+      }
+
+      const remoteSettings = await apiClient.getSettings();
+      if (remoteSettings) {
+        setSettings(remoteSettings);
+      }
+
+      const remotePending = await apiClient.getPendingPayments();
+      if (remotePending) {
+        setPendingPayments(remotePending);
+      }
+    } else {
+      setIsMongoConnected(false);
+    }
+  };
+
+  useEffect(() => {
+    refreshMongoDB();
+    // Auto-retry polling every 4 seconds if not connected yet
+    const interval = setInterval(() => {
+      refreshMongoDB();
+    }, 4000);
+    return () => clearInterval(interval);
   }, []);
 
   // Sync auth state to localStorage
@@ -455,6 +461,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         isOnline,
         setIsOnline,
         isMongoConnected,
+        refreshMongoDB,
         loginSalesman,
         registerSalesman,
         loginAdmin,

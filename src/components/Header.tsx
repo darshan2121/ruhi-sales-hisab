@@ -13,6 +13,7 @@ export const Header: React.FC = () => {
     isOnline,
     setIsOnline,
     isMongoConnected,
+    refreshMongoDB,
     toastMessage,
     settings,
     logout,
@@ -96,18 +97,19 @@ export const Header: React.FC = () => {
               )}
             </div>
 
-            {/* DB Connection Indicator Badge */}
-            <div
-              title={isMongoConnected ? 'Connected to MongoDB Cloud' : 'Running on Local Storage'}
-              className={`flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-lg border ${
+            {/* DB Connection Indicator Badge (Click to Force Sync) */}
+            <button
+              onClick={() => refreshMongoDB()}
+              title={isMongoConnected ? 'Connected to MongoDB Cloud (Click to Sync)' : 'Click to Retry MongoDB Connection'}
+              className={`flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-lg border transition-all active:scale-95 cursor-pointer ${
                 isMongoConnected
-                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/30'
-                  : 'bg-slate-700/50 text-slate-300 border-slate-600'
+                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/30 hover:bg-emerald-500/30'
+                  : 'bg-amber-500/20 text-amber-300 border-amber-400/40 hover:bg-amber-500/30'
               }`}
             >
               <Database size={11} />
-              <span>{isMongoConnected ? 'MongoDB Live' : 'Local DB'}</span>
-            </div>
+              <span>{isMongoConnected ? 'MongoDB Live 🔄' : 'Local DB ⚠️ Click Sync'}</span>
+            </button>
           </div>
 
           <div className="flex items-center gap-2">
