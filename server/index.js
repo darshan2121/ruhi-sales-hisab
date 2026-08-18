@@ -20,6 +20,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 let rawMongoUri = process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://localhost:27017/ruhi_sales_hisab';
 if (rawMongoUri.startsWith('MONGODB_URI=')) {
   rawMongoUri = rawMongoUri.replace('MONGODB_URI=', '').trim();
