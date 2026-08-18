@@ -39,7 +39,7 @@ export const Header: React.FC = () => {
       )}
 
       {/* Main Top Header */}
-      <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Brand & Subtitle */}
         <div className="flex items-center gap-2.5">
           <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm">
@@ -75,7 +75,7 @@ export const Header: React.FC = () => {
 
       {/* Active User Session & Database Status Bar */}
       <div className="bg-blue-900/60 border-t border-blue-400/20 py-2 px-4 text-xs">
-        <div className="max-w-md mx-auto flex items-center justify-between gap-2">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between gap-2">
           {/* User Badge & DB status */}
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 bg-blue-950/50 px-3 py-1.5 rounded-xl border border-white/10">

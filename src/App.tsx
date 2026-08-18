@@ -18,7 +18,7 @@ import { EditHisabModal } from './components/EditHisabModal';
 
 import type { Route, CashBreakdown, HisabEntry } from './types';
 import { calculateCashTotal, getTodayDateString } from './utils/formatters';
-import { AlertCircle, Smartphone, Monitor } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 
 const INITIAL_CASH_BREAKDOWN: CashBreakdown = {
   500: 0,
@@ -47,9 +47,6 @@ const MainContent: React.FC = () => {
   if (!isAuthenticated) {
     return <LoginView />;
   }
-
-  // Mobile frame wrapper toggle for Desktop viewing
-  const [isMobileDeviceView, setIsMobileDeviceView] = useState(true);
 
   // Salesman Navigation view state
   const [salesmanView, setSalesmanView] = useState<
@@ -125,40 +122,11 @@ const MainContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-start p-0 sm:p-4">
-      {/* Top Desktop Frame Switcher Toggle */}
-      <div className="hidden sm:flex items-center gap-3 bg-slate-800 text-slate-300 px-4 py-2 rounded-full mb-3 text-xs font-extrabold shadow-md border border-slate-700">
-        <span className="text-slate-400">View Mode:</span>
-        <button
-          onClick={() => setIsMobileDeviceView(true)}
-          className={`flex items-center gap-1.5 px-3 py-1 rounded-full transition-all ${
-            isMobileDeviceView ? 'bg-[#4B5FC4] text-white shadow-sm' : 'hover:text-white'
-          }`}
-        >
-          <Smartphone size={14} />
-          <span>Mobile Device Frame (380px)</span>
-        </button>
-        <button
-          onClick={() => setIsMobileDeviceView(false)}
-          className={`flex items-center gap-1.5 px-3 py-1 rounded-full transition-all ${
-            !isMobileDeviceView ? 'bg-[#4B5FC4] text-white shadow-sm' : 'hover:text-white'
-          }`}
-        >
-          <Monitor size={14} />
-          <span>Full Width Desktop</span>
-        </button>
-      </div>
+    <div className="min-h-screen bg-slate-100 flex flex-col w-full">
+      <Header />
 
-      {/* Main Container Shell */}
-      <div
-        className={`w-full bg-slate-50 min-h-screen sm:min-h-[820px] sm:rounded-[36px] shadow-2xl overflow-hidden flex flex-col transition-all duration-300 border-0 sm:border-8 sm:border-slate-800 ${
-          isMobileDeviceView ? 'max-w-md' : 'max-w-4xl'
-        }`}
-      >
-        <Header />
-
-        {/* Content Body Area */}
-        <main className="flex-1 p-4 overflow-y-auto">
+      {/* Content Body Area */}
+      <main className="flex-1 w-full max-w-7xl mx-auto p-4 sm:p-6 overflow-y-auto">
           {/* SALESMAN ROLE VIEWS */}
           {currentRole === 'salesman' && (
             <>
@@ -253,7 +221,6 @@ const MainContent: React.FC = () => {
             </>
           )}
         </main>
-      </div>
 
       {/* SUCCESS CONFIRMATION MODAL */}
       {lastSavedEntry && (
