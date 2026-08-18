@@ -20,8 +20,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/ruhi_sales_hisab';
+let rawMongoUri = process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://localhost:27017/ruhi_sales_hisab';
+if (rawMongoUri.startsWith('MONGODB_URI=')) {
+  rawMongoUri = rawMongoUri.replace('MONGODB_URI=', '').trim();
+} else if (rawMongoUri.startsWith('MONGO_URI=')) {
+  rawMongoUri = rawMongoUri.replace('MONGO_URI=', '').trim();
+}
+const MONGODB_URI = rawMongoUri;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
 // Security & Production Middlewares
