@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Gujarati:wght@400;500;600;700;800;900&display=swap');
+
+@import "tailwindcss";
+
+:root {
+  --color-primary: #4B5FC4;
+  --color-primary-dark: #3b4cb5;
+  --font-family: 'Noto Sans Gujarati', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: #f1f5f9;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+/* Hide scrollbar for clean horizontal chips */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Custom animation keyframes */
+@keyframes pulse-subtle {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s infinite ease-in-out;
+}
+
+/* Ensure large touch targets on mobile inputs */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
