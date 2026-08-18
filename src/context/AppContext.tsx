@@ -86,21 +86,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [pendingPayments, setPendingPayments] = useState<PendingPayment[]>(() => {
     const saved = localStorage.getItem('ruhi_pending_payments');
-    return saved ? JSON.parse(saved) : [
-      {
-        id: 'pp-1',
-        customerName: 'Jay Ambe Store (જય અંબે સેલ્સ)',
-        mobile: '9876543210',
-        amount: 2500,
-        routeName: 'Ahmedabad East (અમદાવાદ ઈસ્ટ)',
-        salesmanId: 's1',
-        salesmanName: 'Ramesh Patel',
-        dueDate: getTodayDateString(),
-        status: 'pending',
-        notes: 'ગઈકાલના માલનું બાકી કલેક્શન',
-        createdAt: new Date().toISOString(),
-      },
-    ];
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [language, setLanguageState] = useState<Language>(() => settings.language || 'gu');

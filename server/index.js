@@ -169,6 +169,19 @@ app.post('/api/seed', async (req, res) => {
   res.json({ message: 'Database seeded successfully' });
 });
 
+// Clear Test Entries API (Clears testing entries while preserving Salesmen & Routes)
+app.delete('/api/admin/clear-test-entries', async (req, res) => {
+  if (!isDbConnected) return res.status(503).json({ error: 'Database not connected' });
+  try {
+    await HisabEntry.deleteMany({});
+    await PendingPayment.deleteMany({});
+    console.log('🧹 Cleared all testing entries from MongoDB.');
+    res.json({ success: true, message: 'All test entries cleared successfully. Salesmen and Routes remain preserved.' });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
 // DYNAMIC AUTHENTICATION ROUTES
 
 // Dynamic Salesman Register (Sign Up)
