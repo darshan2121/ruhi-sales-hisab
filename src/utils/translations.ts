@@ -53,7 +53,14 @@ export const translations: Record<Language, Record<string, string>> = {
     bank: 'બેંક ટ્રાન્સફર (Bank Transfer)',
     other: 'અન્ય (Other)',
     
-    step4Title: 'આજનો હિસાબ સમરી',
+    step4Title: '⚠️ માર્કેટ બાકી રકમ (MARKET OUTSTANDING)',
+    step4Sub: 'આજના રૂટ પર ગ્રાહકોની બાકી રહેલ રકમ અહિયાં એડ કરો',
+    marketOutstanding: 'માર્કેટ બાકી રકમ (PENDING)',
+    remainingGap: 'અપેક્ષિત તફાવત / બાકી રકમ',
+    addPendingCustomer: '+ બાકી ગ્રાહક ઉમેરો',
+    noPendingToday: 'કોઈ બાકી નથી, આગળ વધો →',
+    
+    step5Title: 'આજનો ફાઈનલ હિસાબ સમરી',
     profitFormula: 'નફા ગણતરી',
     saveHisabBtn: '✅ હિસાબ સેવ કરો',
     
@@ -161,7 +168,14 @@ export const translations: Record<Language, Record<string, string>> = {
     bank: 'बैंक ट्रांसफर (Bank Transfer)',
     other: 'अन्य (Other)',
     
-    step4Title: 'आज का हिसाब सारांश',
+    step4Title: '⚠️ मार्केट बकाया राशि (MARKET OUTSTANDING)',
+    step4Sub: 'आज के रूट पर ग्राहकों की बकाया राशि यहां दर्ज करें',
+    marketOutstanding: 'मार्केट बकाया राशि (PENDING)',
+    remainingGap: 'अपेक्षित अंतर / बकाया राशि',
+    addPendingCustomer: '+ बकाया ग्राहक जोड़ें',
+    noPendingToday: 'कोई बकाया नहीं, आगे बढ़ें →',
+    
+    step5Title: 'आज का फाइनल हिसाब सारांश',
     profitFormula: 'मुनाफा गणना',
     saveHisabBtn: '✅ हिसाब सेव करें',
     
@@ -263,7 +277,14 @@ export const translations: Record<Language, Record<string, string>> = {
     bank: 'Bank Transfer',
     other: 'Other',
     
-    step4Title: "Today's Hisab Summary",
+    step4Title: '⚠️ MARKET OUTSTANDING',
+    step4Sub: 'Add pending customer balances for today\'s route here',
+    marketOutstanding: 'Market Outstanding (PENDING)',
+    remainingGap: 'Expected Gap / Pending Balance',
+    addPendingCustomer: '+ Add Pending Customer',
+    noPendingToday: 'No Pending Amount, Continue →',
+    
+    step5Title: "Today's Final Hisab Summary",
     profitFormula: 'Profit Calculation',
     saveHisabBtn: '✅ SAVE HISAB',
     

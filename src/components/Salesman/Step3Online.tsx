@@ -39,7 +39,7 @@ export const Step3Online: React.FC<Step3OnlineProps> = ({
           <span>{t.backBtn}</span>
         </button>
         <span className="text-xs font-black bg-blue-100 text-[#4B5FC4] px-3 py-1 rounded-full">
-          STEP 3 / 3
+          STEP 3 / 4
         </span>
       </div>
 

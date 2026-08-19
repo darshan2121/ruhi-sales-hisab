@@ -33,7 +33,7 @@ export const Step1Route: React.FC<Step1RouteProps> = ({
           <span>{t.backBtn}</span>
         </button>
         <span className="text-xs font-black bg-blue-100 text-[#4B5FC4] px-3 py-1 rounded-full">
-          STEP 1 / 3
+          STEP 1 / 4
         </span>
       </div>
 

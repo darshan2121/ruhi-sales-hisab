@@ -63,7 +63,7 @@ export const Step2CashCounter: React.FC<Step2CashCounterProps> = ({
           <span>{t.backBtn}</span>
         </button>
         <span className="text-xs font-black bg-blue-100 text-[#4B5FC4] px-3 py-1 rounded-full">
-          STEP 2 / 3
+          STEP 2 / 4
         </span>
       </div>
 

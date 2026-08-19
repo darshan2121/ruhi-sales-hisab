@@ -6,6 +6,7 @@ import { SalesmanHome } from './components/Salesman/SalesmanHome';
 import { Step1Route } from './components/Salesman/Step1Route';
 import { Step2CashCounter } from './components/Salesman/Step2CashCounter';
 import { Step3Online } from './components/Salesman/Step3Online';
+import { Step4MarketOutstanding, type PendingPaymentDraft } from './components/Salesman/Step4MarketOutstanding';
 import { Step4Summary } from './components/Salesman/Step4Summary';
 import { SuccessModal } from './components/Salesman/SuccessModal';
 import { HistoryView } from './components/Salesman/HistoryView';
@@ -40,6 +41,7 @@ const MainContent: React.FC = () => {
     activeSalesman,
     routes,
     addHisabEntry,
+    addPendingPayment,
     getTodayEntryForSalesman,
     settings,
   } = useApp();
@@ -51,7 +53,7 @@ const MainContent: React.FC = () => {
 
   // Salesman Navigation view state
   const [salesmanView, setSalesmanView] = useState<
-    'home' | 'step1' | 'step2' | 'step3' | 'step4' | 'history' | 'pending'
+    'home' | 'step1' | 'step2' | 'step3' | 'step4' | 'step5' | 'history' | 'pending'
   >('home');
 
   // Admin Navigation tab state
@@ -64,6 +66,7 @@ const MainContent: React.FC = () => {
   const [cashBreakdown, setCashBreakdown] = useState<CashBreakdown>(INITIAL_CASH_BREAKDOWN);
   const [onlineAmount, setOnlineAmount] = useState<number>(0);
   const [onlineMode, setOnlineMode] = useState<'UPI' | 'Bank Transfer' | 'Other' | 'Combined'>('UPI');
+  const [sessionPendingPayments, setSessionPendingPayments] = useState<PendingPaymentDraft[]>([]);
 
   // Completed entry for success modal
   const [lastSavedEntry, setLastSavedEntry] = useState<HisabEntry | null>(null);
@@ -88,6 +91,7 @@ const MainContent: React.FC = () => {
     setCashBreakdown(INITIAL_CASH_BREAKDOWN);
     setOnlineAmount(0);
     setOnlineMode('UPI');
+    setSessionPendingPayments([]);
     setSalesmanView('step1');
   };
 
@@ -97,8 +101,14 @@ const MainContent: React.FC = () => {
 
     const cashAmount = calculateCashTotal(cashBreakdown);
     const totalAmount = cashAmount + onlineAmount;
+    const marketOutstandingAmount = sessionPendingPayments.reduce((sum, p) => sum + p.amount, 0);
     const profitPct = activeSalesman.customProfitPct ?? settings.defaultProfitPct;
     const profitAmount = Math.round(totalAmount * (profitPct / 100));
+
+    // Save added market outstanding (pending payments) to database & context
+    sessionPendingPayments.forEach((pending) => {
+      addPendingPayment(pending);
+    });
 
     const created = addHisabEntry({
       salesmanId: activeSalesman.id,
@@ -109,6 +119,7 @@ const MainContent: React.FC = () => {
       cashBreakdown,
       cashAmount,
       onlineAmount,
+      marketOutstandingAmount,
       onlineMode,
       totalAmount,
       profitPct,
@@ -119,6 +130,7 @@ const MainContent: React.FC = () => {
     });
 
     setLastSavedEntry(created);
+    setSessionPendingPayments([]);
     setSalesmanView('home');
   };
 
@@ -173,13 +185,31 @@ const MainContent: React.FC = () => {
               )}
 
               {salesmanView === 'step4' && selectedRoute && (
+                <Step4MarketOutstanding
+                  route={selectedRoute}
+                  cashAmount={calculateCashTotal(cashBreakdown)}
+                  onlineAmount={onlineAmount}
+                  pendingPayments={sessionPendingPayments}
+                  onAddPendingPayment={(item) =>
+                    setSessionPendingPayments((prev) => [...prev, item])
+                  }
+                  onRemovePendingPayment={(idx) =>
+                    setSessionPendingPayments((prev) => prev.filter((_, i) => i !== idx))
+                  }
+                  onNext={() => setSalesmanView('step5')}
+                  onBack={() => setSalesmanView('step3')}
+                />
+              )}
+
+              {salesmanView === 'step5' && selectedRoute && (
                 <Step4Summary
                   route={selectedRoute}
                   cashBreakdown={cashBreakdown}
                   onlineAmount={onlineAmount}
                   onlineMode={onlineMode}
+                  marketOutstandingAmount={sessionPendingPayments.reduce((sum, p) => sum + p.amount, 0)}
                   onSave={handleSaveHisab}
-                  onBack={() => setSalesmanView('step3')}
+                  onBack={() => setSalesmanView('step4')}
                 />
               )}
 

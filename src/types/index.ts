@@ -55,6 +55,7 @@ export interface HisabEntry {
   cashBreakdown: CashBreakdown;
   cashAmount: number;
   onlineAmount: number;
+  marketOutstandingAmount?: number;
   onlineMode?: 'UPI' | 'Bank Transfer' | 'Other' | 'Combined';
   totalAmount: number;
   profitPct: number;
